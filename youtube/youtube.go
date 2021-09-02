@@ -25,7 +25,6 @@ type Stats struct {
 }
 
 func GetSubscribers() (Item, error) {
-	var response Response
 	req, err := http.NewRequest("GET", "https://www.googleapis.com/youtube/v3/channels", nil)
 
 	if err != nil {
@@ -36,7 +35,8 @@ func GetSubscribers() (Item, error) {
 	q := req.URL.Query()
 	q.Add("key", os.Getenv("YOUTUBE_KEY"))
 	q.Add("id", os.Getenv("CHANNEL_ID"))
-	q.Add("part", os.Getenv("statistics"))
+	q.Add("part", "statistics")
+	fmt.Println("fdsfd", os.Getenv("YOUTUBE_KEY"))
 	req.URL.RawQuery = q.Encode()
 
 	client := &http.Client{}
@@ -57,5 +57,10 @@ func GetSubscribers() (Item, error) {
 
 	var response Response
 
-	err := json.Unmarshal(body, &response)
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return Item{}, err
+	}
+
+	return response.Items[0], nil
 }
